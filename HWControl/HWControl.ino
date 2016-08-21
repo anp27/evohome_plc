@@ -3,34 +3,34 @@
 #include "HWControl.h"
 #include "valvecontrol.h"
 #include "boilercontrol.h"
+#include "receiver.h"
 
 //#define HW_PRIORITY
 #undef HW_PRIORITY
+
+//Set receiver auto reset
+#define RECEIVER_AUTO_RESET 1
+
+/*
+* Boiler Control
+*/
+Boiler BoilerControl(BOILER_CFH);
 /*
  * Valve Outputs
  */
-Boiler BoilerControl(BOILER_CFH);
 Valve UpstairsValve(UPSTAIRS_VALVE, &BoilerControl);
 Valve DownstairsValve(DOWNSTAIRS_VALVE, &BoilerControl);
 Valve DHWValve(DHW_VALVE, &BoilerControl);
 
-void setup() {
-
 /*
- * Configure Controllino IO
- */
-//Configuration Digital IN (24Vdc)
-pinMode(CONTROLLINO_A0, INPUT);  
-pinMode(CONTROLLINO_A1, INPUT);  
-pinMode(CONTROLLINO_A2, INPUT);
+* Receiver Control
+*/
+Receiver UpstairsRcvr(UPSTAIRS_DEMAND, UPSTAIRS_RCVR_PWR, RECEIVER_AUTO_RESET);
+Receiver DownstairsRcvr(DOWNSTAIRS_DEMAND, DOWNSTAIRS_RCVR_PWR, RECEIVER_AUTO_RESET);
+Receiver DHWRcvr(HW_DEMAND, HW_DEMAND_RCVR_PWR, RECEIVER_AUTO_RESET);
 
-// Configuration Relay OUT
-pinMode(CONTROLLINO_R0, OUTPUT);  
-pinMode(CONTROLLINO_R1, OUTPUT); 
-pinMode(CONTROLLINO_R2, OUTPUT);  
-pinMode(CONTROLLINO_R3, OUTPUT); 
-pinMode(CONTROLLINO_R4, OUTPUT);
-
+void setup() {
+    return;
 }
 
 /*
@@ -49,7 +49,7 @@ void loop() {
 
  #ifdef HW_PRIORITY
  
- if (digitalRead(HW_DEMAND) == HIGH)            //DHW Priority
+ if (DHWRcvr.iscallingforheat())            //DHW Priority
  {
     UpstairsValve.CloseValve();
     DownstairsValve.CloseValve();
@@ -59,12 +59,12 @@ void loop() {
  {
   DHWValve.CloseValve();
   
-  if (digitalRead(UPSTAIRS_DEMAND) == HIGH)     //Upstairs Zone    
+  if (if UpstairsRcvr.iscallingforheat())     //Upstairs Zone    
     UpstairsValve.OpenValve();
   else
     UpstairsValve.CloseValve();
 
-  if (digitalRead(DOWNSTAIRS_DEMAND) == HIGH)   //Downstairs Zone
+  if (DownstairsRcvr.iscallingforheat())   //Downstairs Zone
     DownstairsValve.OpenValve();
   else
     DownstairsValve.CloseValve();
@@ -72,17 +72,17 @@ void loop() {
 
  #else
 
- if (digitalRead(HW_DEMAND) == HIGH)     //  Hot Water
+ if (DHWRcvr.iscallingforheat())     //  Hot Water
     DHWValve.OpenValve();
   else
     DHWValve.CloseValve();
 
- if (digitalRead(UPSTAIRS_DEMAND) == HIGH)     //Upstairs Zone
+ if (UpstairsRcvr.iscallingforheat())     //Upstairs Zone
     UpstairsValve.OpenValve();
   else
     UpstairsValve.CloseValve();
 
-  if (digitalRead(DOWNSTAIRS_DEMAND) == HIGH)   //Downstairs Zone
+  if (DownstairsRcvr.iscallingforheat())   //Downstairs Zone
     DownstairsValve.OpenValve();
   else
     DownstairsValve.CloseValve();

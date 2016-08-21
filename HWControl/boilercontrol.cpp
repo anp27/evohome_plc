@@ -2,12 +2,12 @@
 
 Boiler::Boiler(unsigned short binding)
 {
-  Binding = binding;
-  Requests = 0;
-  State = OFF;
-  ActionTime = millis();
-  pinMode(Binding, OUTPUT);
-  digitalWrite(Binding,BOILER_OFF);
+    Binding = binding;
+    Requests = 0;
+    State = OFF;
+    ActionTime = millis();
+    pinMode(Binding, OUTPUT);
+    digitalWrite(Binding,BOILER_OFF);
 }
 
 void Boiler::FireUp()

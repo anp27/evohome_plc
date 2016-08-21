@@ -22,7 +22,7 @@ class Valve
   unsigned long ActionTime;
   
   public:
-    Valve (unsigned short Binding, Boiler* plant);
+    Valve (unsigned short binding, Boiler* plant);
     void ProcessValve();
     void OpenValve();
     void CloseValve();
