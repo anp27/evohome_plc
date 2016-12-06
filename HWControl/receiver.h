@@ -9,6 +9,7 @@
 
 typedef enum {  BOOTING = 0,
                 BOOTED,
+                PENDING_RESET,
                 RESETTING} tReceiverState;
   
 class Receiver
@@ -26,7 +27,7 @@ class Receiver
     };
     
 #define RESET_PIN_STATE                 0
-#define DEFAULT_RESET_TIME              1000
+#define DEFAULT_RESET_TIME              3000
 #define DEFAULT_BOOT_TIME_MS            3000
 #define DEFAULT_RESET_TIMEOUT_HRS       3
 #define DEFAULT_RESET_TIMEOUT           DEFAULT_RESET_TIMEOUT_HRS * 60 * 60 * 1000

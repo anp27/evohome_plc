@@ -14,11 +14,11 @@ Receiver::Receiver(unsigned short input, unsigned short output, bool reset)
     State = RESETTING;
     
     //Setup Arduino IO
-    pinmode(InputBinding, INPUT);
-    pinmode(OutputBinding, OUTPUT);
+    pinMode(InputBinding, INPUT);
+    pinMode(OutputBinding, OUTPUT);
     
     //Put the receiver in reset state
-    digitalwrite(OutputBinding, RESET_PIN_STATE);
+    digitalWrite(OutputBinding, RESET_PIN_STATE);
     
     //Timestamp init event:
     EventTime = millis();
@@ -41,7 +41,8 @@ bool Receiver::iscallingforheat()
     
     switch(State)
     {   case PENDING_RESET:
-            digitalwrite(OutputBinding, RESET_PIN_STATE);
+            digitalWrite(OutputBinding, RESET_PIN_STATE);
+            EventTime = millis();
             State = RESETTING;
             break;
             
@@ -51,7 +52,7 @@ bool Receiver::iscallingforheat()
             break;
             
         case BOOTED:
-            heat = digitalread(InputBinding);
+            heat = digitalRead(InputBinding);
             
             //Detect a request change
             if (heat != LastRequestState)
@@ -71,7 +72,8 @@ bool Receiver::iscallingforheat()
         case RESETTING:
             //Wait for device reset time
             if (TimeTaken >= DEFAULT_RESET_TIME){
-                digitalwrite(OutputBinding, !RESET_PIN_STATE);
+                EventTime = millis();
+                digitalWrite(OutputBinding, !RESET_PIN_STATE);
                 State = BOOTING;
             }
             break;
