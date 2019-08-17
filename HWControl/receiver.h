@@ -30,6 +30,6 @@ class Receiver
 #define DEFAULT_RESET_TIME              3000
 #define DEFAULT_BOOT_TIME_MS            3000
 #define DEFAULT_RESET_TIMEOUT_HRS       3
-#define DEFAULT_RESET_TIMEOUT           DEFAULT_RESET_TIMEOUT_HRS * 60 * 60 * 1000
+#define DEFAULT_RESET_TIMEOUT           (unsigned long)DEFAULT_RESET_TIMEOUT_HRS * 60 * 60 * 1000
 
 #endif

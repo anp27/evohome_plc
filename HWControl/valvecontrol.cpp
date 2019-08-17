@@ -1,4 +1,5 @@
 #include "valvecontrol.h"
+#include <limits.h>
 
 Valve::Valve(unsigned short binding, Boiler* plant)
 {
@@ -46,13 +47,14 @@ void Valve::OpenValve()
 
 void Valve::ProcessValve()
 {
-  /*
-   * Check for timer roll over and update timestamp if required. Strictly speaking
-   * this will extend the open / close time in the unlikely event a valve event happens 
-   * on roll over, but this is the safest and easiest way of dealing with the problem.
-   */
-  if (millis() < ActionTime)
-    ActionTime = millis();
+
+  unsigned long TimeTaken;
+
+  //Calculate time taken since last event
+  if (millis() >= ActionTime)
+      TimeTaken = (millis() - ActionTime);
+  else
+      TimeTaken = (millis() + (ULONG_MAX - ActionTime));
     
   switch (State) {
     case UNBOUND : break;
@@ -60,7 +62,7 @@ void Valve::ProcessValve()
     case OPEN : break;
     
     case OPENING :
-      if ((millis() - ActionTime) > VALVE_OPEN_TIME)
+      if (TimeTaken > VALVE_OPEN_TIME)
         State = REGISTERING;
       break;
       
@@ -90,7 +92,7 @@ void Valve::ProcessValve()
       break;
       
     case CLOSING :
-      if ((millis() - ActionTime) > VALVE_CLOSE_TIME)
+      if (TimeTaken > VALVE_CLOSE_TIME)
         State = CLOSED;
       break;
 

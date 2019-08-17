@@ -1,4 +1,3 @@
-#include <SPI.h>
 #include <Controllino.h>
 #include "HWControl.h"
 #include "valvecontrol.h"
@@ -21,6 +20,7 @@ Boiler BoilerControl(BOILER_CFH);
 Valve UpstairsValve(UPSTAIRS_VALVE, &BoilerControl);
 Valve DownstairsValve(DOWNSTAIRS_VALVE, &BoilerControl);
 Valve DHWValve(DHW_VALVE, &BoilerControl);
+Valve UnderfloorValve(UNDERFLOOR_VALVE, &BoilerControl);
 
 /*
 * Receiver Control
@@ -40,6 +40,7 @@ void ProcessValves() {
   UpstairsValve.ProcessValve();
   DownstairsValve.ProcessValve();
   DHWValve.ProcessValve();
+  UnderfloorValve.ProcessValve();
 }
 
 void loop() {
@@ -54,20 +55,32 @@ void loop() {
     UpstairsValve.CloseValve();
     DownstairsValve.CloseValve();
     DHWValve.OpenValve();
+    UnderfloorValve.CloseValve();
  }
  else
  {
   DHWValve.CloseValve();
   
-  if (if UpstairsRcvr.iscallingforheat())     //Upstairs Zone    
+  if (UpstairsRcvr.iscallingforheat())     //Upstairs Zone
+  {
     UpstairsValve.OpenValve();
+  }
   else
+  {
     UpstairsValve.CloseValve();
+  }
 
-  if (DownstairsRcvr.iscallingforheat())   //Downstairs Zone
+  if (DownstairsRcvr.iscallingforheat())   //Downstairs Zone + Underfloor valve
+  {
     DownstairsValve.OpenValve();
+    UnderfloorValve.OpenValve();
+  }
   else
+  {
     DownstairsValve.CloseValve();
+    UnderfloorValve.CloseValve();
+  }
+
  }
 
  #else
@@ -82,10 +95,16 @@ void loop() {
   else
     UpstairsValve.CloseValve();
 
-  if (DownstairsRcvr.iscallingforheat())   //Downstairs Zone
+  if (DownstairsRcvr.iscallingforheat())   //Downstairs Zone + Underfloor valve
+  {
     DownstairsValve.OpenValve();
+    UnderfloorValve.OpenValve();
+  }
   else
+  {
     DownstairsValve.CloseValve();
+    UnderfloorValve.CloseValve();
+  }
     
  #endif
 

@@ -16,7 +16,7 @@
 
 //Outputs
 #define BOILER_CFH              CONTROLLINO_R0
-#define SPARE_VALVE             CONTROLLINO_R2
+#define UNDERFLOOR_VALVE        CONTROLLINO_R2
 #define DOWNSTAIRS_VALVE        CONTROLLINO_R3
 #define UPSTAIRS_VALVE          CONTROLLINO_R1
 #define DHW_VALVE               CONTROLLINO_R4

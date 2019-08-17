@@ -1,4 +1,5 @@
 #include "boilercontrol.h"
+#include <limits.h>
 
 Boiler::Boiler(unsigned short binding)
 {
@@ -34,7 +35,8 @@ bool Boiler::RevokeRequest()
   //Decrement request count and return request status
   if (Requests > 0)
     Requests-= 1;
-    return (Requests > 0);
+
+  return (Requests > 0);
 }
 
 bool Boiler::AllowClose()
@@ -46,13 +48,13 @@ bool Boiler::AllowClose()
 
 void Boiler::ProcessState()
 {
-  /*
-   * Check for timer roll over and update timestamp if required. Strictly speaking
-   * this will extend the open / close time in the unlikely event a valve event happens 
-   * on roll over, but this is the safest and easiest way of dealing with the problem.
-   */
-  if (millis() < ActionTime)
-    ActionTime = millis();
+  unsigned long TimeTaken;
+
+ //Calculate time taken since last event
+  if (millis() >= ActionTime)
+    TimeTaken = (millis() - ActionTime);
+  else
+    TimeTaken = (millis() + (ULONG_MAX - ActionTime));
     
   switch (State) {
     case DISCONNECTED : break;
@@ -74,18 +76,20 @@ void Boiler::ProcessState()
       break;
       
     case FIRING_UP :
-      if ((millis() - ActionTime) > BOILER_START_TIME)
+      if (TimeTaken > BOILER_START_TIME)
         State = ON;
       break;
       
     case SHUTTING_DOWN :
-      if ((millis() - ActionTime) > BOILER_STOP_TIME)
+      if (TimeTaken > BOILER_STOP_TIME)
         State = OFF;
-
-      if (Requests > 0)
+      else
       {
-        FireUp();
-        State = FIRING_UP; 
+        if (Requests > 0)
+        {
+          FireUp();
+          State = FIRING_UP;
+        }
       }
       break;
 
