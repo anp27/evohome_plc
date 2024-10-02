@@ -4,8 +4,8 @@
 #include "boilercontrol.h"
 #include "receiver.h"
 
-#define HW_PRIORITY
-//#undef HW_PRIORITY
+//#define HW_PRIORITY
+#undef HW_PRIORITY
 
 //Set receiver auto reset
 #define RECEIVER_AUTO_RESET 1
@@ -56,9 +56,9 @@ void loop() {
  
  if (DHWRcvr.iscallingforheat())            //DHW Priority
  {
+    DHWValve.OpenValve();
     UpstairsValve.CloseValve();
     DownstairsValve.CloseValve();
-    DHWValve.OpenValve();
     UnderfloorValve.CloseValve();
     BathroomUfPump.CloseValve();
  }
